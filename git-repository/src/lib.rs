@@ -1,10 +1,17 @@
+use std::path::PathBuf;
 
 pub mod init;
+pub mod error;
 
 
 #[derive(Debug)]
-pub enum Kind {
+pub enum RepoKind {
     Repo,
     Worktree
+}
+
+pub enum Path {
+    Repo(PathBuf),
+    Worktree(PathBuf)
 }
 
