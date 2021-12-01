@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::PathBuf;
 
-use crate::error::ErrorKind::{CreateDirectory};
+use crate::error::ErrorKind::CreateDirectory;
 use crate::error::{ErrorKind, NomosError};
 use crate::RepoKind;
 use std::fs::OpenOptions;
@@ -34,40 +34,55 @@ pub fn init<T: Into<PathBuf>>(directory: T, kind: RepoKind) -> Result<(), NomosE
     create_dir(&root)?;
 
     // info
-    {
-        let info_dir = root.join("info");
-        prepare_dir(&info_dir)?;
-        create_dir(&info_dir);
-        info_dir.join("exclude");
-        write_file(TPL_INFO_EXCLUDE, &info_dir.join("exclude"))?;
-    }
+    let info_dir = root.join("info");
+    prepare_dir(&info_dir)?;
+    create_dir(&info_dir);
+    info_dir.join("exclude");
+    write_file(TPL_INFO_EXCLUDE, &info_dir.join("exclude"))?;
+
     // hooks
-    {
-        let mut hooks = root.join("hooks");
-        for (tpl, filename) in &[
-            (TPL_HOOKS_UPDATE, "update.sample"),
-            (TPL_HOOKS_PREPARE_COMMIT_MSG, "prepare-commit-msg.sample"),
-            (TPL_HOOKS_PRE_RECEIVE, "pre-receive.sample"),
-            (TPL_HOOKS_PRE_REBASE, "pre-rebase.sample"),
-            (TPL_HOOKS_PRE_PUSH, "pre-push.sample"),
-            (TPL_HOOKS_PRE_COMMIT, "pre-commit.sample"),
-            (TPL_HOOKS_PRE_MERGE_COMMIT, "pre-merge-commit.sample"),
-            (TPL_HOOKS_PRE_APPLYPATCH, "pre-applypatch.sample"),
-            (TPL_HOOKS_POST_UPDATE, "post-update.sample"),
-            (TPL_HOOKS_FSMONITOR_WATCHMAN, "fsmonitor-watchman.sample"),
-            (TPL_HOOKS_COMMIT_MSG, "commit-msg.sample"),
-            (TPL_HOOKS_APPLYPATCH_MSG, "applypatch-msg.sample"),
-        ] {
-            write_file(tpl, &hooks.join(filename))?;
-        }
-    }
-    // objects
-    {
-        let objects = root.join("objects");
-        create_dir(&objects)?;
-        create_dir(&objects)?;
+    let mut hooks = root.join("hooks");
+    create_dir(&hooks);
+    for (tpl, filename) in [
+        (TPL_HOOKS_UPDATE, "update.sample"),
+        (TPL_HOOKS_PREPARE_COMMIT_MSG, "prepare-commit-msg.sample"),
+        (TPL_HOOKS_PRE_RECEIVE, "pre-receive.sample"),
+        (TPL_HOOKS_PRE_REBASE, "pre-rebase.sample"),
+        (TPL_HOOKS_PRE_PUSH, "pre-push.sample"),
+        (TPL_HOOKS_PRE_COMMIT, "pre-commit.sample"),
+        (TPL_HOOKS_PRE_MERGE_COMMIT, "pre-merge-commit.sample"),
+        (TPL_HOOKS_PRE_APPLYPATCH, "pre-applypatch.sample"),
+        (TPL_HOOKS_POST_UPDATE, "post-update.sample"),
+        (TPL_HOOKS_FSMONITOR_WATCHMAN, "fsmonitor-watchman.sample"),
+        (TPL_HOOKS_COMMIT_MSG, "commit-msg.sample"),
+        (TPL_HOOKS_APPLYPATCH_MSG, "applypatch-msg.sample"),
+    ] {
+        write_file(tpl, &hooks.join(filename))?;
     }
 
+    // objects
+    create_dir(&root.join("objects"))?;
+
+    // refs
+    create_dir(&root.join("refs"))?;
+
+    // tags
+    create_dir(&root.join("tags"))?;
+
+    for (tpl, filename) in &[
+        (TPL_HEAD, "HEAD"),
+        (TPL_DESCRIPTION, "description"),
+    ] {
+            write_file(tpl, &root.join(filename))?;
+    }
+
+    let tpl = String::from_utf8(TPL_CONFIG.to_vec())?;
+    let ntpl = tpl.replace("{bare-value}",
+                match kind {
+                    RepoKind::Repo => "true",
+                    RepoKind::Worktree => "false",
+                });
+    write_file(ntpl.as_bytes(), &root.join("config"));
 
     Ok(())
 }
@@ -107,17 +122,20 @@ fn write_file(data: &[u8], path: &PathBuf) -> Result<(), NomosError> {
         .create(true)
         .append(false)
         .open(path)
-        .map_err(|e| NomosError::new(ErrorKind::IoOpen {
+        .map_err(|e| {
+            NomosError::new(ErrorKind::IoOpen {
+                source: e,
+                path: path.to_owned(),
+            })
+        })?;
+    file.write_all(data).map_err(|e| {
+        NomosError::new(ErrorKind::IoWrite {
             source: e,
-            path: path.to_owned(),
-        }))?;
-    file.write_all(data).map_err(|e|  NomosError::new(ErrorKind::IoWrite {
-        source: e,
-        path: path.clone(),
-    }));
+            path: path.clone(),
+        })
+    })?;
     Ok(())
 }
-
 
 #[cfg(test)]
 mod test {

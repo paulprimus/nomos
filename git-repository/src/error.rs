@@ -1,18 +1,19 @@
 use std::path::PathBuf;
+use std::string::FromUtf8Error;
 
 /// An error that can occur in this crate.
 #[derive(Debug)]
 pub struct NomosError {
-    errorKind: ErrorKind,
+    error_kind: ErrorKind,
 }
 
 impl NomosError {
     pub fn new(kind: ErrorKind) -> NomosError {
-        NomosError { errorKind: kind }
+        NomosError { error_kind: kind }
     }
     /// Return the kind of this error.
     pub fn kind(&self) -> &ErrorKind {
-        &self.errorKind
+        &self.error_kind
     }
 }
 
@@ -22,4 +23,11 @@ pub enum ErrorKind {
     IoOpen { source: std::io::Error, path: PathBuf },
     IoWrite { source: std::io::Error, path: PathBuf },
     CreateDirectory { source: std::io::Error, path: PathBuf },
+    FromUtf8Error {source: FromUtf8Error}
+}
+
+impl From<FromUtf8Error> for NomosError{
+    fn from(error: FromUtf8Error) -> Self {
+        NomosError::new(ErrorKind::FromUtf8Error {source: error})
+    }
 }

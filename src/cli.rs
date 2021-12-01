@@ -1,4 +1,4 @@
-use clap::{AppSettings, Parser};
+use clap::{Parser};
 
 #[derive(Debug, Parser)]
 #[clap(version="0.1", author="Paul Primus <paul.primus@gmail.com>")]
