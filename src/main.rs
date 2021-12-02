@@ -1,5 +1,7 @@
 use clap::Parser;
 use git_repository;
+use git_repository::error::NomosError;
+use git_repository::RepoKind;
 use crate::cli::{Args, SubCommand};
 
 mod cli;

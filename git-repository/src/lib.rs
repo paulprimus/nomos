@@ -6,7 +6,7 @@ pub mod error;
 
 #[derive(Debug)]
 pub enum RepoKind {
-    Repo,
+    Bare,
     Worktree
 }
 

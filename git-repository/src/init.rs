@@ -79,10 +79,10 @@ pub fn init<T: Into<PathBuf>>(directory: T, kind: RepoKind) -> Result<(), NomosE
     let tpl = String::from_utf8(TPL_CONFIG.to_vec())?;
     let ntpl = tpl.replace("{bare-value}",
                 match kind {
-                    RepoKind::Repo => "true",
+                    RepoKind::Bare => "true",
                     RepoKind::Worktree => "false",
                 });
-    write_file(ntpl.as_bytes(), &root.join("config"));
+    write_file(ntpl.as_bytes(), &root.join("config"))?;
 
     Ok(())
 }
@@ -147,6 +147,6 @@ mod test {
 
     #[test]
     fn test_init() {
-        init("test_dir", RepoKind::Repo);
+        init("test_dir", RepoKind::Bare);
     }
 }
