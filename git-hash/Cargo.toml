@@ -1,0 +1,22 @@
+[package]
+name = "git-hash"
+version = "0.1.0"
+description = "Borrowed and owned git hash digests used to identify git objects"
+authors = ["Paul Pacher <paul.pacher@gmail.com>"]
+edition = "2021"
+include = ["src/**/*", "CHANGELOG.md"]
+
+[lib]
+doctest = false
+test = false
+
+[features]
+serde1 = ["serde"]
+
+[dependencies]
+hex = "0.4.3"
+serde = { version = "1.0.132", optional = true, default-features = false, features = ["derive"] }
+git-error = {path="../git-error"}
+
+[package.metadata.docs.rs]
+all-features = true

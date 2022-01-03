@@ -23,7 +23,9 @@ pub enum ErrorKind {
     IoOpen { source: std::io::Error, path: PathBuf },
     IoWrite { source: std::io::Error, path: PathBuf },
     CreateDirectory { source: std::io::Error, path: PathBuf },
-    FromUtf8Error {source: FromUtf8Error}
+    FromUtf8Error {source: FromUtf8Error},
+    InvalidByteSliceLength {len: usize},
+    InvalidHexEncodingLength {len: usize},
 }
 
 impl From<FromUtf8Error> for NomosError{

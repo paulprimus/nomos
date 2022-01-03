@@ -57,12 +57,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "git-error"
+version = "0.1.0"
+
+[[package]]
+name = "git-hash"
+version = "0.1.0"
+dependencies = [
+ "git-error",
+ "hex",
+ "serde",
+]
+
+[[package]]
 name = "git-objects"
+version = "0.1.0"
+
+[[package]]
+name = "git-odb"
 version = "0.1.0"
 
 [[package]]
 name = "git-repository"
 version = "0.1.0"
+dependencies = [
+ "git-error",
+]
 
 [[package]]
 name = "hashbrown"
@@ -87,6 +107,12 @@ checksum = "62b467343b94ba476dcb2500d242dadbb39557df889310ac77c5d99100aaac33"
 dependencies = [
  "libc",
 ]
+
+[[package]]
+name = "hex"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
 name = "indexmap"
@@ -121,6 +147,7 @@ name = "nomos"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "git-error",
  "git-repository",
 ]
 
@@ -173,6 +200,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "38bc8cc6a5f2e3655e0899c1b848643b2562f853f114bfec7be120678e3ace05"
 dependencies = [
  "proc-macro2",
+]
+
+[[package]]
+name = "serde"
+version = "1.0.132"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8b9875c23cf305cd1fd7eb77234cbb705f21ea6a72c637a5c6db5fe4b8e7f008"
+dependencies = [
+ "serde_derive",
+]
+
+[[package]]
+name = "serde_derive"
+version = "1.0.132"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ecc0db5cb2556c0e558887d9bbdcf6ac4471e83ff66cf696e5419024d1606276"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

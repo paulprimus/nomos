@@ -25,7 +25,6 @@ pub struct Commit {
     pub encoding: Option<String>,
     /// The commit message documenting the change.
     pub message: String,
-
 }
 
 

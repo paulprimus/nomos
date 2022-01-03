@@ -1,8 +1,8 @@
 use std::fs;
 use std::path::PathBuf;
 
-use crate::error::ErrorKind::CreateDirectory;
-use crate::error::{ErrorKind, NomosError};
+use git_error::error::ErrorKind::{CreateDirectory};
+use git_error::error::{ErrorKind, NomosError};
 use crate::RepoKind;
 use std::fs::OpenOptions;
 use std::io::Write;
